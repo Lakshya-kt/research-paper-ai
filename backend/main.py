@@ -73,18 +73,31 @@ async def upload_pdf(file: UploadFile = File(...)):
 @app.post("/chat")
 async def chat_with_paper(data: dict):
     question=data["question"]
+    history = data.get("history", [])
     relevant_chunks=retrieve_relevant_chunks(question)
     context="\n\n".join(relevant_chunks)
+    conversation = ""
+
+    for msg in history:
+        role = "User" if msg["role"] == "user" else "Assistant"
+        conversation += f"{role}: {msg['content']}\n"
+    
     prompt = f"""
     Answer the question using the research paper context.
 
     Context:
     {context}
 
-    Question:
+    Previous Conversation:
+    {conversation}
+    
+    Current Question:
     {question}
-
-    Give a clear educational explanation.
+    - Use the research paper as the primary source.
+    - Use previous conversation only to understand follow-up questions.
+    - Do not invent facts.
+    - If the answer isn't in the paper, clearly say so.
+    - Explain concepts in a teaching style with examples when helpful.
     """
     response = model.generate_content(prompt)
 

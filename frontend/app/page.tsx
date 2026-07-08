@@ -1,8 +1,15 @@
 "use client";
-import ReactMarkdown from "react-markdown";
 import { useState } from "react";
 import axios from "axios";
-
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import Footer from "@/components/Footer";
+import UploadCard from "@/components/UploadCard";
+import SummaryCard from "@/components/SummaryCard";
+import EmptyState from "@/components/EmptyState";
+import ChatSection from "@/components/ChatSection";
+import Flashcards from "@/components/Flashcards";
+import LoadingOverlay from "@/components/LoadingOverlay";
 export default function Home() {
 
   const [file, setFile] = useState<File | null>(null);
@@ -43,6 +50,7 @@ export default function Home() {
 
       setSummary(data.summary);
       setPaperText(data.paper_text);
+      setMessages([]);
 
     } catch (error) {
 
@@ -57,17 +65,18 @@ export default function Home() {
     // Ask question
   const askQuestion = async () => {
 
-    if (!question) return;
-
+    if (!question.trim()) return;
+    
     const userMessage = {
       role: "user",
       content: question,
     };
 
-    setMessages((prev) => [
-      ...prev,
-      userMessage,
-    ]);
+      // Create updated history
+    const updatedMessages = [...messages, userMessage];
+
+    // Show user message immediately
+    setMessages(updatedMessages);
 
 
     try {
@@ -83,6 +92,7 @@ export default function Home() {
           },
           body: JSON.stringify({
             question: question,
+            history:messages,
           }),
         }
       );
@@ -95,19 +105,13 @@ export default function Home() {
         content: data.answer,
       };
 
-      setMessages((prev) => [
-        ...prev,
-        aiMessage,
-      ]);
+      setMessages((prev) => [...prev, aiMessage]);
 
-    setQuestion("");
+      setQuestion("");
     
     } catch (error) {
-
       console.error(error);
-
     } finally {
-
       setChatLoading(false);
     }
   };
@@ -144,159 +148,53 @@ export default function Home() {
     }
   };
 
-  return (
+    return (
+    <div className="min-h-screen bg-slate-100">
 
-    <div className="min-h-screen p-10 bg-gray-100">
+      <LoadingOverlay open={loading} />
 
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow">
+      <Navbar />
 
-        <h1 className="text-4xl font-bold mb-6">
-          Research Paper AI
-        </h1>
+      <Hero />
 
-        {/* Upload Section */}
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-12">
 
-        <div className="flex gap-4 items-center">
+        <UploadCard
+          file={file}
+          loading={loading}
+          setFile={setFile}
+          uploadFile={uploadFile}
+        />
 
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) => {
-
-              if (e.target.files && e.target.files[0]) {
-                setFile(e.target.files[0]);
-              }
-            }}
-            className="border p-2 rounded"
-          />
-
-          <button
-            onClick={uploadFile}
-            disabled={loading}
-            className="bg-black text-white px-5 py-2 rounded"
-          >
-            {loading ? "Generating..." : "Upload"}
-          </button>
-
-        </div>
-
-        {loading && (
-
-          <div className="mt-6 text-lg">
-            AI is analyzing the research paper...
-          </div>
+        {!summary && !loading && (
+          <EmptyState />
         )}
-
-        {/* Summary */}
-        {summary && (
-
-          <div className="mt-10">
-
-            <h2 className="text-2xl font-semibold mb-4">
-              AI Summary
-            </h2>
-
-            <div className="bg-gray-50 border p-5 rounded-lg prose max-w-none">
-              <ReactMarkdown>
-                {summary}
-              </ReactMarkdown>
-            </div>
-
-          </div>
-        )}
-        <button
-          onClick={generateFlashcards}
-          className="mt-6 bg-green-600 text-white px-5 py-3 rounded"
-        >
-          Generate Flashcards
-        </button>
-        {flashcards && (
-
-          <div className="mt-8">
-
-            <h2 className="text-2xl font-semibold mb-4">
-              Flashcards
-            </h2>
-
-            <div className="bg-green-50 border p-5 rounded-lg whitespace-pre-wrap leading-7">
-              {flashcards}
-            </div>
-
-          </div>
-        )}
-
-        {/* Chat Section */}
 
         {summary && (
+          <>
+            <SummaryCard
+              summary={summary}
+            />
 
-          <div className="mt-10">
+            <Flashcards
+              flashcards={flashcards}
+              loading={FlashcardLoading}
+              generateFlashcards={generateFlashcards}
+            />
 
-            <h2 className="text-2xl font-semibold mb-4">
-              Chat With Paper
-            </h2>
-
-            <div className="flex gap-4">
-
-              <input
-                type="text"
-                placeholder="Ask a question..."
-                value={question}
-                onChange={(e) =>
-                  setQuestion(e.target.value)
-                }
-                className="flex-1 border p-3 rounded"
-              />
-
-              <button
-                onClick={askQuestion}
-                className="bg-blue-600 text-white px-5 py-3 rounded"
-              >
-                Ask
-              </button>
-
-            </div>
-
-            {chatLoading && (
-
-              <div className="mt-5">
-                AI is thinking...
-              </div>
-            )}
-
-            {messages.length > 0  && (
-
-              <div className="mt-6 space-y-4">
-
-                {messages.map((msg,index)=>(
-                  <div
-                  key={index}
-                  className={
-                    msg.role =="user"
-                    ? "bg-gray-200 p-4 rounded-lg"
-                    : "bg-blue-50 p-4 rounded-lg"
-                  }
-                >
-                  <p className="font-semibold mb-1">
-                    {msg.role === "user"
-                      ? "You"
-                      : "AI"}
-                  </p>
-
-                  <div className="prose max-w-none">
-                    <ReactMarkdown>
-                      {msg.content}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-                ))}
-                
-              </div>
-            )}
-
-          </div>
+            <ChatSection
+              question={question}
+              setQuestion={setQuestion}
+              askQuestion={askQuestion}
+              messages={messages}
+              loading={chatLoading}
+            />
+          </>
         )}
 
-      </div>
+      </main>
+
+      <Footer />
 
     </div>
   );
