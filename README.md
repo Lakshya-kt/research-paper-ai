@@ -1,3 +1,4 @@
+
 # 📚 Research Paper AI
 
 An AI-powered research assistant that transforms complex research papers into interactive learning material. Upload any research paper in PDF format and instantly receive concept-based explanations, ask questions in natural language, and generate flashcards for revision.
@@ -207,11 +208,12 @@ Add screenshots of:
 
 * <img width="1910" height="899" alt="Screenshot 2026-07-08 181156" src="https://github.com/user-attachments/assets/c9eecb57-65fe-4ed4-8ac8-27085cd73d31" />
 
-* <img width="600" height="611" alt="Screenshot 2026-07-08 183253" src="https://github.com/user-attachments/assets/233a46c3-3a87-4b16-8ccf-acbcc7f53d4f" />
+* <img width="1557" height="607" alt="Screenshot 2026-07-08 181127" src="https://github.com/user-attachments/assets/94c54ed9-8c85-474d-b89e-63bc4a8a71e7" />
 
-* 
-* Chat Interface
-* Flashcards
+* <img width="911" height="735" alt="Screenshot 2026-07-09 153013" src="https://github.com/user-attachments/assets/d1b089ee-5abe-4f97-892f-81f04cc63490" />
+
+* <img width="1609" height="882" alt="Screenshot 2026-07-09 153210" src="https://github.com/user-attachments/assets/14911627-1997-4a31-a388-991d34bc7e9c" />
+
 
 ---
 
