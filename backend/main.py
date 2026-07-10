@@ -13,8 +13,7 @@ model = genai.GenerativeModel("models/gemini-2.5-flash")
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://research-paper-.*\.vercel\.app",
-                   "http://localhost:3000"],
+    allow_origin_regex="https://research-paper-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
